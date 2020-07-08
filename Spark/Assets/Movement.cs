@@ -4,23 +4,38 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
-    public float speed = 1;
-    public Rigidbody2D rb;
+    private float moveSpeed = 10f;
+    public Transform movePoint;
+
+    public LayerMask collision;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        movePoint.parent = null;
     }
 
     // Update is called once per frame
     void Update()
     {
-        float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
+        transform.position = Vector3.MoveTowards(transform.position, movePoint.position, moveSpeed * Time.deltaTime);
 
-        Vector2 movement = new Vector2(h, v);
-
-        rb.AddForce(movement);
+        if (Vector3.Distance(transform.position, movePoint.position) <= .05f)
+        {
+            if (Mathf.Abs(Input.GetAxisRaw("Horizontal")) == 1f)
+            {
+                if (!Physics2D.OverlapCircle(movePoint.position + new Vector3(Input.GetAxisRaw("Horizontal"), 0f, 0f), .2f, collision))
+                {
+                    movePoint.position += new Vector3(Input.GetAxisRaw("Horizontal"), 0f, 0f);
+                }
+            }
+            if (Mathf.Abs(Input.GetAxisRaw("Vertical")) == 1f)
+            {
+                if (!Physics2D.OverlapCircle(movePoint.position + new Vector3(0f, Input.GetAxisRaw("Vertical"), 0f), .2f, collision))
+                {
+                    movePoint.position += new Vector3(0f, Input.GetAxisRaw("Vertical"), 0f);
+                }
+            }
+        }
     }
 }
